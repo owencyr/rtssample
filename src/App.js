@@ -1,9 +1,17 @@
+import React, {useState} from 'react';
 import Search from './Search';
+import History from './History'
 import './App.css';
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 export default function App() {
+  const addSearchHistory = (searchTerm) => {
+    updateSearchHistory([...searchHistory, searchTerm ])
+  }
+  const [searchHistory, updateSearchHistory] = useState([])
+
+  console.log({...searchHistory})
   return (
     <Router>
       <div>
@@ -25,10 +33,10 @@ export default function App() {
             renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/search">
-            <Search />
+            <Search addSearchHistory={addSearchHistory} />
           </Route>
           <Route path="/history">
-            <History />
+            <History searchHistory={searchHistory} />
           </Route>
           <Route path="/">
             <Home />
@@ -41,8 +49,4 @@ export default function App() {
 
 function Home() {
   return <h2>Search Hacker News</h2>;
-}
-
-function History() {
-  return <h2>History</h2>;
 }
