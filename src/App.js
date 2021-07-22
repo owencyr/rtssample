@@ -1,17 +1,16 @@
-import React, {useState} from 'react';
-import Search from './Search';
-import History from './History'
-import './App.css';
-
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import Search from './Search';
+import History from './History';
+import './App.css';
 
 export default function App() {
   const addSearchHistory = (searchTerm) => {
-    updateSearchHistory([...searchHistory, searchTerm ])
-  }
-  const [searchHistory, updateSearchHistory] = useState([])
+    updateSearchHistory([...searchHistory, searchTerm]);
+  };
+  const [searchHistory, updateSearchHistory] = useState([]);
 
-  console.log({...searchHistory})
+  console.log({ ...searchHistory });
   return (
     <Router>
       <div>

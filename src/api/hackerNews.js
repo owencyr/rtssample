@@ -3,12 +3,12 @@ export const getByDate = async (query) => {
 
   try {
     const searchStoriesByDateResponse = await fetch(searchStoriesByDateEndpoint);
-    const responseBody = await searchStoriesByDateResponse.json()
-    const searchResults = responseBody && responseBody.hits ? responseBody.hits : null
+    const responseBody = await searchStoriesByDateResponse.json();
+    const searchResults = responseBody && responseBody.hits ? responseBody.hits : null;
     console.log({ searchByDateResponse: searchStoriesByDateResponse, responseBody });
 
-    return searchResults
+    return searchResults;
   } catch (e) {
-    throw e
+    throw e;
   }
 };

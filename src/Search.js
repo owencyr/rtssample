@@ -8,13 +8,17 @@ export default function Search({ addSearchHistory }) {
     const articles = await getByDate(searchTerm);
     if (articles) {
       addSearchHistory(searchTerm);
-      updateSearchResults(articles)
+      updateSearchResults(articles);
     }
   };
 
   const renderSearchResults = (searchResults) => {
     return searchResults.map((result, index) => {
-      return <li key={`${result.title.slice(4)}-${index}}`}>{result.title}</li>;
+      return (
+        <li key={`${result.title.slice(4)}-${index}}`}>
+          <a href={result.url}>{result.title}</a>
+        </li>
+      );
     });
   };
 
