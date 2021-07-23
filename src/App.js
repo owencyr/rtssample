@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Search from './Search';
 import History from './History';
-import './App.css';
 
 export default function App() {
   const addSearchHistory = (searchTerm) => {
