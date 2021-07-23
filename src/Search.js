@@ -65,17 +65,18 @@ export default function Search({ addSearchHistory }) {
 
   const nextPage = async () => {
     setLoading(true);
-    const pageToUpdateTo = currentPage + 1;
-    await handleSubmit(null, pageToUpdateTo);
-    setCurrentPage(pageToUpdateTo);
+    const pageToQuery = currentPage + 1;
+    await handleSubmit(null, pageToQuery);
+    setCurrentPage(pageToQuery);
   };
 
   const previousPage = async () => {
     setLoading(true);
-    const pageToUpdateTo = currentPage > firstPageIndex ? currentPage - 1 : firstPageIndex;
-    await handleSubmit(null, pageToUpdateTo);
-    setCurrentPage(pageToUpdateTo);
+    const pageToQuery = currentPage - 1;
+    await handleSubmit(null, pageToQuery);
+    setCurrentPage(pageToQuery);
   };
+
   return (
     <div>
       <form onSubmit={(event) => handleSubmit(event, currentPage)}>
