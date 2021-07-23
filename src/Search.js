@@ -1,74 +1,89 @@
 import React, { useState } from 'react';
 import { getByDate } from './api/hackerNews';
 
+const strings = {
+  nextPage: 'Next Page',
+  previousPage: 'Previous Page',
+  inputPlaceholder: 'Search for articles',
+  pageText: 'Page: ',
+};
+
+const firstPageIndex = 0;
+
 export default function Search({ addSearchHistory }) {
-  const handleSubmit = async (event = { preventDefault: () => {} }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [currentPage, setCurrentPage] = useState(firstPageIndex);
+  const [totalSearchResultsPages, setTotalSearchResultsPages] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const previousPageButtonDisabled =
+    loading || searchResults.length === 0 || currentPage === firstPageIndex;
+  const nextPageButtonDisabled =
+    loading ||
+    searchResults.length === 0 ||
+    totalSearchResultsPages === 0 ||
+    currentPage === totalSearchResultsPages;
+  const displayedPage = currentPage + 1;
+
+  const handleSubmit = async (event = { preventDefault: () => {} }, page) => {
     try {
-      event.preventDefault();
+      if (event) event.preventDefault();
       const searchTermValid = searchTerm !== '';
-      console.log({ searchTerm });
+      console.log({ searchTerm, page });
       if (searchTermValid) {
-        const {
-          searchResults = [],
-          searchResultsPage = 0,
-          totalPages = 0,
-        } = await getByDate(searchTerm);
+        const { searchResults = [], totalPages = 0 } = await getByDate(searchTerm, page);
         if (searchResults && searchResults.length) {
           addSearchHistory(searchTerm);
-          updateSearchResults(searchResults);
-          updateSearchResultsPage(searchResultsPage);
-          updateTotalSearchResultsPages(totalPages);
+          setSearchResults(searchResults);
+          setTotalSearchResultsPages(totalPages);
         }
       } else {
+        console.log('throwing search term error');
         throw new Error('Not a valid search term');
       }
+      return null;
     } catch (e) {
-      updateErrorMessage(e);
+      setErrorMessage(e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderSearchResults = (searchResults) => {
-    return searchResults.map((result, index) => {
-      return (
-        <li key={`${result.title.slice(4)}-${index}}`}>
-          <a href={result.url}>{result.title}</a>
-        </li>
-      );
-    });
+  const renderSearchResults = (searchResults) =>
+    searchResults.length
+      ? searchResults.map((result, index) => {
+          const key = result.objectId ? result.objectId : `${result.title.slice(4)}${index}`;
+          return (
+            <li key={key}>
+              <a href={result.url}>{result.title}</a>
+            </li>
+          );
+        })
+      : null;
+
+  const nextPage = async () => {
+    setLoading(true);
+    const pageToUpdateTo = currentPage + 1;
+    await handleSubmit(null, pageToUpdateTo);
+    setCurrentPage(pageToUpdateTo);
   };
 
-  const nextPage = () => {
-    updateSearchResultsPage(searchResultsPage + 1);
-    handleSubmit(searchResultsPage);
+  const previousPage = async () => {
+    setLoading(true);
+    const pageToUpdateTo = currentPage > firstPageIndex ? currentPage - 1 : firstPageIndex;
+    await handleSubmit(null, pageToUpdateTo);
+    setCurrentPage(pageToUpdateTo);
   };
-
-  const previousPage = () => {
-    const pageToUpdateTo = searchResultsPage > 1 ? searchResultsPage - 1 : 1;
-    updateSearchResultsPage(pageToUpdateTo);
-    handleSubmit(searchResultsPage);
-  };
-
-  const [searchTerm, updateSearchTerm] = useState('');
-  const [searchResults, updateSearchResults] = useState([]);
-  const [searchResultsPage, updateSearchResultsPage] = useState(0);
-  const [totalSearchResultsPages, updateTotalSearchResultsPages] = useState(0);
-  const [errorMessage, updateErrorMessage] = useState('');
-
-  const previousPageButtonDisabled = searchResults.length === 0 || searchResultsPage === 0;
-  const nextPageButtonDisabled =
-    searchResults.length === 0 ||
-    totalSearchResultsPages === 0 ||
-    searchResultsPage === totalSearchResultsPages;
-
-  console.log({ searchResults });
   return (
     <div>
-      <form onSubmit={(event) => handleSubmit(event)}>
+      <form onSubmit={(event) => handleSubmit(event, currentPage)}>
         <input
           type="text"
-          placeholder="Search for articles"
+          placeholder={strings.inputPlaceholder}
           value={searchTerm}
-          onChange={(event) => updateSearchTerm(event.target.value)}
+          onChange={(event) => setSearchTerm(event.target.value)}
         ></input>
         <div style={{ visibility: errorMessage === '' ? 'hidden' : 'visible' }}>{errorMessage}</div>
         <input type="submit"></input>
@@ -78,18 +93,22 @@ export default function Search({ addSearchHistory }) {
           onClick={previousPage}
           disabled={previousPageButtonDisabled}
         >
-          Previous Page
+          {strings.previousPage}
         </button>
+        <div>
+          {strings.pageText}
+          {displayedPage}
+        </div>
         <button
           id="next-page-button"
           type="button"
           onClick={nextPage}
           disabled={nextPageButtonDisabled}
         >
-          Next Page
+          {strings.nextPage}
         </button>
       </form>
-      <ul>{searchResults ? renderSearchResults(searchResults) : null}</ul>
+      <ul>{searchResults && searchResults.length ? renderSearchResults(searchResults) : null}</ul>
     </div>
   );
 }
