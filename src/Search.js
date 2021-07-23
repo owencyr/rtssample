@@ -31,7 +31,6 @@ export default function Search({ addSearchHistory }) {
     try {
       if (event) event.preventDefault();
       const searchTermValid = searchTerm !== '';
-      console.log({ searchTerm, page });
       if (searchTermValid) {
         const { searchResults = [], totalPages = 0 } = await getByDate(searchTerm, page);
         if (searchResults && searchResults.length) {
@@ -40,7 +39,6 @@ export default function Search({ addSearchHistory }) {
           setTotalSearchResultsPages(totalPages);
         }
       } else {
-        console.log('throwing search term error');
         throw new Error('Not a valid search term');
       }
       return null;

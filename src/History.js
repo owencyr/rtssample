@@ -1,5 +1,4 @@
 export default function History({ searchHistory }) {
-  console.log({ searchHistory });
 
   const renderHistoryList = (history) => {
     return searchHistory.map((historicalSearch, index) => {
