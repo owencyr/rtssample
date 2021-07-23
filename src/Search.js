@@ -32,6 +32,8 @@ export default function Search({ addSearchHistory }) {
           addSearchHistory(searchTerm);
           setSearchResults(searchResults);
           setTotalSearchResultsPages(totalPages);
+        } else {
+          setSearchResults(defaults.searchResults);
         }
       } else {
         throw new Error('Not a valid search term');
@@ -45,16 +47,14 @@ export default function Search({ addSearchHistory }) {
   };
 
   const renderSearchResults = (searchResults) =>
-    searchResults.length
-      ? searchResults.map((result, index) => {
-          const key = result.objectId ? result.objectId : `${result.title.slice(4)}${index}`;
-          return (
-            <li key={key}>
-              <a href={result.url}>{result.title}</a>
-            </li>
-          );
-        })
-      : null;
+    searchResults.map((result, index) => {
+      const key = result.objectId ? result.objectId : `${result.title.slice(4)}${index}`;
+      return (
+        <li key={key}>
+          <a href={result.url}>{result.title}</a>
+        </li>
+      );
+    });
 
   const nextPage = async () => {
     setLoading(true);
@@ -99,7 +99,7 @@ export default function Search({ addSearchHistory }) {
           {strings.nextPage}
         </button>
       </form>
-      <ul>{searchResults && searchResults.length ? renderSearchResults(searchResults) : null}</ul>
+      <ul>{searchResults && searchResults.length ? renderSearchResults(searchResults) : 'No Results'}</ul>
     </div>
   );
 }

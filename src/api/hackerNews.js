@@ -8,9 +8,10 @@ export const getByDate = async (query = '', page = 0) => {
     if (searchByDateResponse) {
       const { hits: searchResults = [], nbPages: totalPages = 0 } = searchByDateResponse;
       return { searchResults, totalPages };
+    } else {
+      throw new Error('No Response from API');
     }
-    return { searchResults: [], totalPages: 0 };
   } catch (e) {
-    throw new Error('Issue with Hacker News API');
+    throw new Error(e.message ? e.message : 'Error Occurred when Querying API');
   }
 };
