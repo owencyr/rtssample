@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import { getByDate } from './api/hackerNews';
-
-const strings = {
-  nextPage: 'Next Page',
-  previousPage: 'Previous Page',
-  inputPlaceholder: 'Search for articles',
-  pageText: 'Page: ',
-};
-
-const firstPageIndex = 0;
+import { firstPageIndex, strings, defaults } from './constants';
 
 export default function Search({ addSearchHistory }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [currentPage, setCurrentPage] = useState(firstPageIndex);
-  const [totalSearchResultsPages, setTotalSearchResultsPages] = useState(0);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState(defaults.searchTerm);
+  const [searchResults, setSearchResults] = useState(defaults.searchResults);
+  const [currentPage, setCurrentPage] = useState(defaults.currentPage);
+  const [totalSearchResultsPages, setTotalSearchResultsPages] = useState(
+    defaults.totalSearchResultsPages
+  );
+  const [errorMessage, setErrorMessage] = useState(defaults.errorMessage);
   const [loading, setLoading] = useState(false);
 
   const previousPageButtonDisabled =
@@ -25,9 +19,10 @@ export default function Search({ addSearchHistory }) {
     searchResults.length === 0 ||
     totalSearchResultsPages === 0 ||
     currentPage === totalSearchResultsPages;
-  const displayedPage = currentPage + 1;
+  const displayedPage = `${strings.pageText}${currentPage + 1}`;
 
   const handleSubmit = async (event = { preventDefault: () => {} }, page) => {
+    setErrorMessage(strings.defaultErrorMessage);
     try {
       if (event) event.preventDefault();
       const searchTermValid = searchTerm !== '';
@@ -43,7 +38,7 @@ export default function Search({ addSearchHistory }) {
       }
       return null;
     } catch (e) {
-      setErrorMessage(e);
+      setErrorMessage(e.message);
     } finally {
       setLoading(false);
     }
@@ -94,10 +89,7 @@ export default function Search({ addSearchHistory }) {
         >
           {strings.previousPage}
         </button>
-        <div>
-          {strings.pageText}
-          {displayedPage}
-        </div>
+        <div>{displayedPage}</div>
         <button
           id="next-page-button"
           type="button"

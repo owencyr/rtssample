@@ -6,7 +6,9 @@ import './App.css';
 
 export default function App() {
   const addSearchHistory = (searchTerm) => {
-    updateSearchHistory([...searchHistory, searchTerm]);
+    if (!searchHistory.includes(searchTerm)) {
+      updateSearchHistory([...searchHistory, searchTerm]);
+    }
   };
   const [searchHistory, updateSearchHistory] = useState([]);
   return (
